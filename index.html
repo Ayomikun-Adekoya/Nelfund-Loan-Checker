@@ -338,6 +338,85 @@
             line-height: 1.4;
         }
 
+        /* Note section styles */
+        .note-section {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #e0f2fe, #b3e5fc);
+            border-radius: 16px;
+            border: 1px solid #0288d1;
+            position: relative;
+            animation: fadeInUp 0.6s ease-out 0.5s;
+            animation-fill-mode: both;
+        }
+
+        .note-section::before {
+            content: '💡';
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: linear-gradient(135deg, #e0f2fe, #b3e5fc);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-size: 20px;
+            border: 1px solid #0288d1;
+        }
+
+        .note-section h4 {
+            color: #01579b;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .note-section p {
+            color: #0277bd;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .forms-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forms-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .forms-link:hover::before {
+            left: 100%;
+        }
+
+        .forms-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .forms-link:active {
+            transform: translateY(0);
+        }
+
         /* Responsive design */
         @media (max-width: 640px) {
             .container {
@@ -368,10 +447,29 @@
                 padding: 14px;
                 font-size: 16px;
             }
+
+            .note-section {
+                padding: 20px;
+                margin-top: 24px;
+            }
+
+            .note-section h4 {
+                font-size: 15px;
+            }
+
+            .note-section p {
+                font-size: 13px;
+            }
+
+            .forms-link {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
         }
 
         /* Focus visible for accessibility */
-        .submit-btn:focus-visible {
+        .submit-btn:focus-visible,
+        .forms-link:focus-visible {
             outline: 2px solid #667eea;
             outline-offset: 2px;
         }
@@ -451,12 +549,7 @@
                     <label for="session">Session</label>
                     <select id="session" name="session" required>
                         <option value="">Select Session</option>
-                        <option value="2020/2021">2020/2021</option>
-                        <option value="2021/2022">2021/2022</option>
-                        <option value="2022/2023">2022/2023</option>
-                        <option value="2023/2024">2023/2024</option>
                         <option value="2024/2025">2024/2025</option>
-                        <option value="2025/2026">2025/2026</option>
                     </select>
                 </div>
 
@@ -464,16 +557,7 @@
                     <label for="batch">Batch No</label>
                     <select id="batch" name="batch" required>
                         <option value="">Select Batch</option>
-                        <option value="1">Batch 1</option>
-                        <option value="2">Batch 2</option>
-                        <option value="3">Batch 3</option>
-                        <option value="4">Batch 4</option>
-                        <option value="5">Batch 5</option>
-                        <option value="6">Batch 6</option>
-                        <option value="7">Batch 7</option>
-                        <option value="8">Batch 8</option>
-                        <option value="9">Batch 9</option>
-                        <option value="10">Batch 10</option>
+                        <option value="1">Batch 1</option>                 
                     </select>
                 </div>
             </div>
@@ -482,6 +566,17 @@
                 Check Status
             </button>
         </form>
+
+        <div class="note-section">
+            <h4>Important Notice</h4>
+            <p>
+                If your loan status shows as <strong>APPROVED</strong> but you haven't received your loan disbursement yet, 
+                please click the link below to submit your matric number for follow-up.
+            </p>
+            <a href="https://forms.gle/abguXAgETL1TgD238" target="_blank" class="forms-link">
+                📝 Report Missing Loan Disbursement
+            </a>
+        </div>
 
         <div id="loading">
             <div class="loading-spinner"></div>

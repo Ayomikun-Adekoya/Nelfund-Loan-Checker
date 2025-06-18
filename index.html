@@ -51,7 +51,7 @@
         }
 
         .container {
-            max-width: 480px;
+            max-width: 520px;
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
@@ -134,7 +134,8 @@
             position: relative;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 16px 20px;
             border: 2px solid #e5e7eb;
@@ -146,15 +147,33 @@
             font-weight: 500;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
         }
 
-        .form-group input:valid {
+        .form-group input:valid,
+        .form-group select:valid {
             border-color: #10b981;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            padding: 10px;
+        }
+
+        /* Two column layout for session and batch */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .submit-btn {
@@ -330,9 +349,19 @@
                 font-size: 24px;
             }
 
-            .form-group input {
+            .form-group input,
+            .form-group select {
                 padding: 14px 16px;
                 font-size: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-row .form-group {
+                margin-bottom: 24px;
             }
 
             .submit-btn {
@@ -348,27 +377,36 @@
         }
 
         /* Improved form validation styles */
-        .form-group input:invalid:not(:placeholder-shown) {
+        .form-group input:invalid:not(:placeholder-shown),
+        .form-group select:invalid:not(:placeholder-shown) {
             border-color: #ef4444;
             box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
         }
 
         /* Add subtle animations to form elements */
-        .form-group {
+        .form-group,
+        .form-row {
             animation: fadeInUp 0.6s ease-out;
             animation-fill-mode: both;
         }
 
-        .form-group:nth-child(1) {
+        .form-group:nth-child(1),
+        .form-row:nth-child(1) {
             animation-delay: 0.1s;
         }
 
-        .form-group:nth-child(2) {
+        .form-group:nth-child(2),
+        .form-row:nth-child(2) {
             animation-delay: 0.2s;
         }
 
+        .form-group:nth-child(3),
+        .form-row:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
         .submit-btn {
-            animation: fadeInUp 0.6s ease-out 0.3s;
+            animation: fadeInUp 0.6s ease-out 0.4s;
             animation-fill-mode: both;
         }
 
@@ -408,6 +446,38 @@
                 </div>
             </div>
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="session">Session</label>
+                    <select id="session" name="session" required>
+                        <option value="">Select Session</option>
+                        <option value="2020/2021">2020/2021</option>
+                        <option value="2021/2022">2021/2022</option>
+                        <option value="2022/2023">2022/2023</option>
+                        <option value="2023/2024">2023/2024</option>
+                        <option value="2024/2025">2024/2025</option>
+                        <option value="2025/2026">2025/2026</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="batch">Batch No</label>
+                    <select id="batch" name="batch" required>
+                        <option value="">Select Batch</option>
+                        <option value="1">Batch 1</option>
+                        <option value="2">Batch 2</option>
+                        <option value="3">Batch 3</option>
+                        <option value="4">Batch 4</option>
+                        <option value="5">Batch 5</option>
+                        <option value="6">Batch 6</option>
+                        <option value="7">Batch 7</option>
+                        <option value="8">Batch 8</option>
+                        <option value="9">Batch 9</option>
+                        <option value="10">Batch 10</option>
+                    </select>
+                </div>
+            </div>
+
             <button type="submit" class="submit-btn" id="submitBtn">
                 Check Status
             </button>
@@ -434,12 +504,14 @@
 
             const maticId = $('#maticId').val().trim();
             const trackingId = $('#trackingId').val().trim();
+            const session = $('#session').val();
+            const batch = $('#batch').val();
             const $loading = $('#loading');
             const $result = $('#result');
             const $submitBtn = $('#submitBtn');
 
             // Validate inputs
-            if (!maticId || !trackingId) {
+            if (!maticId || !trackingId || !session || !batch) {
                 showResult('rejected', '❌', 'All fields are required.');
                 return;
             }
@@ -454,60 +526,75 @@
                 method: 'POST',
                 data: {
                     maticId: maticId,
-                    trackingId: trackingId
+                    trackingId: trackingId,
+                    session: session,
+                    batch: batch
                 },
                 success: function (data) {
-                    // alert('Data received: ' + data.status);
-                    data = JSON.parse(data);
+                    try {
+                        // Parse JSON response
+                        const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+                        
+                        $loading.hide();
+                        $submitBtn.prop('disabled', false).text('Check Status');
 
-                    $loading.hide();
-                    $submitBtn.prop('disabled', false).text('Check Status');
-
-                    let icon, className;
-                    if (data.status === 'approved') {
-                        icon = '✅';
-                        className = 'approved';
-                    } else if (data.status === 'pending') {
-                        icon = '⏳';
-                        className = 'pending';
-                    } else if (data.status === 'rejected') {
-                        icon = '❌';
-                        className = 'rejected';
-                    } else {
-                        icon = '❌';
-                        className = 'rejected';
+                        let icon, className;
+                        if (parsedData.status === 'approved') {
+                            icon = '✅';
+                            className = 'approved';
+                        } else if (parsedData.status === 'pending') {
+                            icon = '⏳';
+                            className = 'pending';
+                        } else if (parsedData.status === 'rejected') {
+                            icon = '❌';
+                            className = 'rejected';
+                        } else {
+                            icon = '❌';
+                            className = 'rejected';
+                        }
+                        
+                        showResult(className, icon, parsedData.status.charAt(0).toUpperCase() + parsedData.status.slice(1));
+                    } catch (e) {
+                        $loading.hide();
+                        $submitBtn.prop('disabled', false).text('Check Status');
+                        showResult('rejected', '❌', 'Error processing response. Please try again.');
                     }
-                    showResult(className, icon, data.status);
-
                 },
                 error: function (xhr, status, error) {
                     $loading.hide();
                     $submitBtn.prop('disabled', false).text('Check Status');
-                    showResult('rejected', '❌', `${error}. Please try again later.`);
+                    
+                    let errorMessage = 'An error occurred. Please try again later.';
+                    if (xhr.status === 404) {
+                        errorMessage = 'No record found with the provided details.';
+                    } else if (xhr.responseText) {
+                        errorMessage = xhr.responseText;
+                    }
+                    
+                    showResult('rejected', '❌', errorMessage);
                 }
             });
+        });
 
-            function showResult(className, icon, message) {
-                const $result = $('#result');
-                $('#resultIcon').text(icon);
-                $('#resultMessage').html(`<h3>${message}</h3>`);
-                $result.attr('class', `result ${className}`).show();
+        function showResult(className, icon, message) {
+            const $result = $('#result');
+            $('#resultIcon').text(icon);
+            $('#resultMessage').html(`<h3>${message}</h3>`);
+            $result.attr('class', `result ${className}`).show();
+        }
+
+        // Auto-uppercase inputs
+        $('#maticId, #trackingId').on('input', function () {
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        // Add form validation feedback
+        $('input[required], select[required]').on('blur change', function () {
+            if ($(this).val().trim() === '') {
+                $(this).css('border-color', '#ef4444');
+            } else {
+                $(this).css('border-color', '#10b981');
             }
-
-            // Auto-uppercase inputs
-            $('#maticId, #trackingId').on('input', function () {
-                $(this).val($(this).val().toUpperCase());
-            });
-
-            // Add form validation feedback
-            $('input[required]').on('blur', function () {
-                if ($(this).val().trim() === '') {
-                    $(this).css('border-color', '#ef4444');
-                } else {
-                    $(this).css('border-color', '#10b981');
-                }
-            });
-
         });
     </script>
 </body>
